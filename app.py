@@ -59,5 +59,17 @@ def get_user(user_id):
         return jsonify({'id': user.id, 'username': user.username})
     return jsonify({'message': 'User not found'}), 404
 
+@app.route('/user/<int:user_id>', methods=['DELETE'])
+@login_required
+def delete_user(user_id):
+    user = User.query.get(user_id)
+    if user.id == current_user.id:
+        return jsonify({'message': 'You cannot delete yourself'}), 403
+    if user:
+        db.session.delete(user)
+        db.session.commit()
+        return jsonify({'message': 'User deleted successfully'})
+    return jsonify({'message': 'User not found'}), 404
+
 if __name__ == '__main__':
     app.run(debug=True)
